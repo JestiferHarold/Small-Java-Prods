@@ -3,62 +3,130 @@ import java.util.Random;
 
 class HealthBar{
 
+	/* To - Do
+	 * getter and setter annotations
+	 * Make the program work
+	 *
+	 */
+
+	private String name;
 	private int HP;
 	private Random randomiser;
 
-	private boolean isPlayerDead(){
-		if (this.HP <= 0) {
-			return true;
-		} 
-		return false;
+	public boolean ifDead(HealthBar p1, HealthBar p2, WaterGunGame game) throws InterruptedException{
+		HealthBar[] array2 = {p1, p2};
+		for(HealthBar i : array2) {
+			java.util.function.BooleanSupplier f = () -> {
+				if (i.getHP() <= -1){
+					return (boolean)true;
+				}
+				return (boolean)false;
+			};
+
+			if (f.getAsBoolean()) {
+				game.clearScreen();
+				game.printslow(i.getName() + " has lost the match");
+				return false;
+			}
+		}
+		return true;
+	}
+//	@Getter
+	public int getHP() {
+		return this.HP;
 	}
 
-	public void damageInflicted(int damage, Object self) {
+//	@Setter
+	public String getName() {
+		return this.name;
+	}	
+
+//	@Setter
+	public void damageInflicted(int damage, WaterGun self) {
 		this.HP -= damage;
 		self.attackSuccessful(damage);
 	}
-	
+
+//	@Setter
 	public void healDamage() {
-		java.util.function.Supplier<Integer> heal = () -> {
+		java.util.function.IntSupplier heal = () -> {
 			int rand = randomiser.nextInt(20);
 			if (this.HP + rand > 100) {
-				return 100 - this.HP;
+				return (int)100 - this.HP;
 			}
-			return rand;
+			return (int)rand;
 		};
-		this.HP += heal;
+		this.HP += heal.getAsInt();
 	}
 
 //256 for white	
+//	public void printHealthBar() {
+//		terminalWidth = jline.TerminalFactory.get().getWidth();
+//		System.out.println(terminalWidth);
+//	}
 
-	public HealthBar() {
-		this.HP = 1000;
+
+	public void printHealthBar(HealthBar player1, HealthBar player2) {
+		HealthBar[] baring = {player1, player2};
+
+		for (HealthBar i : baring) {
+			System.out.print("[");
+			int f = i.getHP() / 2;
+			for (int j = 0; j < f; j++) {
+				System.out.print("#");
+			}
+			for (int k = 0; k < 50 - f; k++) {
+				System.out.print("-");
+			}
+			System.out.println("]" + " -> " + i.getName());
+			System.out.println("");
+		}
+	}
+
+
+	public HealthBar(String name) {
+		this.HP = 100;
 		randomiser = new Random();
+		this.name = name;
 	}
-}
 
-class Testing{
-	public static void main(String[] args){
-		HealthBar healthing = new HealthBar();
-		System.out.println(healthing.healDamage());
-	}
+//	public static void main(String[] args) {
+//		HealthBar bar = new HealthBar(); 
+//		bar.printHealthBar();
+//	}
+
+//	public static void main(String[] args){ 
+//		HealthBar p1 = new HealthBar();
+//		HealthBar p2 = new HealthBar();
+//		printHealthBar(p1, p2);	
+//	}
 }
 
 class WaterGun{
 	private int gunPower;
 	private Random randomiser;
 
+	public boolean missedAttack(){
+		return randomiser.nextBoolean() && randomiser.nextBoolean() || randomiser.nextBoolean() && randomiser.nextBoolean();
+	}
+
 	public void fillGun() {
 		this.gunPower += randomiser.nextInt(1, 21);
 	}
 
-	public void attackSuccessfull(int damage) {
+	public void attackSuccessful(int damage) {
 		this.gunPower -=  damage;
 	}
 
 	
-	public void attack(Object Health) {
-		Health.(randomiser.nextInt(1, fullPower));
+	public int attack(HealthBar Health, WaterGun gun ) {
+		int damage = randomiser.nextInt(1, this.gunPower);
+		Health.damageInflicted(randomiser.nextInt(1, damage), gun);
+		return damage;
+	}
+
+	public int getGunPower() {
+		return this.gunPower;
 	}
 
 	public WaterGun() {
@@ -67,110 +135,125 @@ class WaterGun{
 }
 
 public class WaterGunGame{
-	
-	private static Random randomiser;
 
-	public boolean missedAttack(){
-		return randomiser.nextBoolean() && randomiser.nextBoolean() || randomiser.nextBoolean() && randomiser.nextBoolean();
+	public void printslow(String s) throws InterruptedException {
+		char[] sa = s.toCharArray();
+		//for(int i = 0; i < s.length; i++) {
+		//	System.out.print(s.charAt(i));
+		//	Thread.sleep(100);
+		//}
+		
+		for(char i : sa) {
+			System.out.print(i);
+			Thread.sleep(100);
+		}
+		System.out.println("");
+	}
+
+	public void clearScreen() {
+
+		System.out.print("\033\143");
 	}
 
 	public static void main(String[] args) throws InterruptedException{
 
 		Scanner prompt = new Scanner(System.in);
-		randomiser = new Random();
-		WaterGunGame gunner = new WaterGunGame();
+		WaterGunGame gun = new WaterGunGame();
 
-		System.out.print("\033\143");
-		System.out.println("WELCOME TO WATER GUN GAME");
-		System.out.println("Enter the name of the first player : ");
+		gun.clearScreen();
+		gun.printslow("WELCOME TO WATER GUN GAME");
+		gun.printslow("Enter the name of the first player : ");
 		String firstPlayer = prompt.nextLine();
-		System.out.println("Enter the name of the second player : ");
+		gun.printslow("Enter the name of the second player : ");
+
 		String secondPlayer = prompt.nextLine();
-		System.out.print("\033\143");
-		Thread.sleep(1000);
+		gun.clearScreen();
+		Thread.sleep(500);
 		
-		int firstPlayerHP = 100,
-		    secondPlayerHP = 100,
-		    gun1Power = 0,
-		    gun2Power = 0;
+		HealthBar p1 = new HealthBar(firstPlayer);
+		HealthBar p2 = new HealthBar(secondPlayer);
+		
+		WaterGun g1 = new WaterGun();
+		WaterGun g2 = new WaterGun();
 
 		boolean isPlayer1Turn = true;
 
-		while (firstPlayerHP > 0 && secondPlayerHP > 0) {
-
-			System.out.println(firstPlayer + "'s water gun is " + gun1Power + "% filled and will cause " + gun1Power + " damage to the enemy if used");
-			System.out.println("\n" + secondPlayer + "'s water gun is " + gun2Power + "% filled and will cause " + gun2Power + " damage to the enemy if used");
+		while (p1.ifDead(p1, p2, gun)) {
+			p1.printHealthBar(p1 , p2);
+			gun.printslow(p1.getName() + "'s water gun is " + g1.getGunPower() + "% filled and will cause " + g1.getGunPower() + " damage to the enemy if used");
+			gun.printslow("\n" + p2.getName() + "'s water gun is " + g2.getGunPower() + "% filled and will cause " + g2.getGunPower() + " damage to the enemy if used");
 			if (isPlayer1Turn) {
-				System.out.println("\n" + firstPlayer + ", Choose your option (1. Fill your gun, 2. Attack " + secondPlayer + ")");
+				gun.printslow("\n" + firstPlayer + ", Chose your option (1. Fill your gun, 2. Attack " + secondPlayer + ")");
 			} else {
-				System.out.println("\n" + secondPlayer + ", Choose your option (1. Fill your gun, 2. Attack " + firstPlayer + ")");
+				gun.printslow("\n" + secondPlayer + ", Choose your option (1. Fill your gun, 2. Attack " + firstPlayer + ")");
 			}
 
 			int action = prompt.nextInt();
 
+			gun.clearScreen();
 			switch (action) {
 
 				case 1:
 					if (isPlayer1Turn) {
-						if (gun1Power >= 100) {
-							System.out.println("Gun is fully filled try again");
+						if (g1.getGunPower() >= 100) {
+							gun.printslow("Gun is fully filled try again");
+							Thread.sleep(500);
 							continue;
 						}
-						System.out.print("\033\143");
-						System.out.println(firstPlayer + " has filled their gun");
-						gun1Power += gunner.fillGun();
-						
+						gun.clearScreen();
+						gun.printslow(p1.getName() + " has filled their gun");
+						g1.fillGun();
+
 					} else {
-						if (gun2Power >= 100) {
-							System.out.println("Gun is fully filled try again");
+						if (g2.getGunPower() >= 100) {
+							gun.printslow("Gun is fully filled try again");
+							Thread.sleep(500);
 							continue;
 						}
-						System.out.print("\033\143");
-						System.out.println(secondPlayer + " has filled their gun");
-						gun2Power += gunner.fillGun();
+						gun.clearScreen();
+						gun.printslow(p2.getName() + " has filled their gun");
+						g2.fillGun();
 					}
 					break;
 
 				case 2:
 					if (isPlayer1Turn) { 
-						if (gun1Power == 0) {
-							System.out.print("\033\143");
-							System.out.println("UhOh " + firstPlayer + "'s gun has no water in it");
+						if (g1.getGunPower() == 0) {
+							gun.clearScreen();
+							gun.printslow("UhOh " + p1.getName() + "'s gun has no water in it");
+							Thread.sleep(500);
 							break;
 						}
-						if (!gunner.missedAttack()) {
-							System.out.print("\033\143");
-							System.out.println(firstPlayer + "'s attack has been missed");
+						if (!g1.missedAttack()) {
+							gun.clearScreen();
+							gun.printslow(p1.getName() + "'s attack has been missed");
+							Thread.sleep(500);
 							break;
 						}
 	
-						int drained = gunner.attack(gun1Power);	
-						secondPlayerHP -= drained;
-						gun1Power -= drained;
-
-						System.out.println("Hooray!!!! Attack successfull " + firstPlayer + " has inflicted " + secondPlayer + " " + drained + " damage and now " + secondPlayer + " has " + secondPlayerHP + " HP");
+						int drained = g1.attack(p2, g1);	
+						gun.printslow("Hooray!!!! Attack successfull " + p1.getName() + " has inflicted " + p2.getName() + " " + drained + " damage and now " + p2.getName() + " has " + p2.getHP() + " HP");
 					} else {
-						if (gun2Power == 0) {
-							System.out.println("UhOh " + secondPlayer + "'s gun has no water in it");
+						if (g2.getGunPower() == 0) {
+							gun.printslow("UhOh " + p2.getName() + "'s gun has no water in it");
 							break;
 						}
-						if (!gunner.missedAttack()) {
-							System.out.println(secondPlayer + "'s attack has been missed");
+						if (!g2.missedAttack()) {
+							gun.printslow(p2.getName() + "'s attack has been missed");
 							break;
 						}
 	
-						int drained = gunner.attack(gun2Power);	
-						firstPlayerHP -= drained;
-						gun2Power -= drained;
+						int drained = g2.attack(p1, g2);	
 
-						System.out.println("Hooray!!!! Attack successfull " + secondPlayer + " has inflicted " + firstPlayer + " " + drained + " damage and now " + firstPlayer + " has " + firstPlayerHP + " HP");
+						gun.printslow("Hooray!!!! Attack successfull " + p2.getName() + " has inflicted " + p1.getName() + " " + drained + " damage and now " + p1.getName() + " has " + p1.getHP() + " HP");
 					}
 					
 					break;
 
 				default:
 
-					System.out.println("Invalid option try again");
+					gun.clearScreen();
+					gun.printslow("Invalid option try again");
 					continue;
 
 			}
