@@ -110,8 +110,8 @@ class WaterGun{
 		return randomiser.nextBoolean() && randomiser.nextBoolean() || randomiser.nextBoolean() && randomiser.nextBoolean();
 	}
 
-	public void fillGun() {
-		this.gunPower += randomiser.nextInt(1, 21);
+	public void fillGun(WaterGun waffer) {
+		this.gunPower += this.randomiser.nextInt(1, 21);
 	}
 
 	public void attackSuccessful(int damage) {
@@ -131,6 +131,7 @@ class WaterGun{
 
 	public WaterGun() {
 		this.gunPower = 0;
+		this.randomiser = new Random();
 	}
 }
 
@@ -145,7 +146,7 @@ public class WaterGunGame{
 		
 		for(char i : sa) {
 			System.out.print(i);
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		System.out.println("");
 	}
@@ -157,6 +158,7 @@ public class WaterGunGame{
 
 	public static void main(String[] args) throws InterruptedException{
 
+		Random randomiser = new Random();
 		Scanner prompt = new Scanner(System.in);
 		WaterGunGame gun = new WaterGunGame();
 
@@ -197,22 +199,25 @@ public class WaterGunGame{
 					if (isPlayer1Turn) {
 						if (g1.getGunPower() >= 100) {
 							gun.printslow("Gun is fully filled try again");
-							Thread.sleep(500);
+							Thread.sleep(1000);
+							gun.clearScreen();
 							continue;
 						}
 						gun.clearScreen();
 						gun.printslow(p1.getName() + " has filled their gun");
-						g1.fillGun();
-
+						g1.fillGun(g1);
+						gun.clearScreen();
 					} else {
 						if (g2.getGunPower() >= 100) {
 							gun.printslow("Gun is fully filled try again");
-							Thread.sleep(500);
+							Thread.sleep(1000);
+							gun.clearScreen();
 							continue;
 						}
 						gun.clearScreen();
 						gun.printslow(p2.getName() + " has filled their gun");
-						g2.fillGun();
+						g2.fillGun(g2);
+						gun.clearScreen();
 					}
 					break;
 
@@ -222,12 +227,14 @@ public class WaterGunGame{
 							gun.clearScreen();
 							gun.printslow("UhOh " + p1.getName() + "'s gun has no water in it");
 							Thread.sleep(500);
+							gun.clearScreen();
 							break;
 						}
 						if (!g1.missedAttack()) {
 							gun.clearScreen();
 							gun.printslow(p1.getName() + "'s attack has been missed");
 							Thread.sleep(500);
+							gun.clearScreen();
 							break;
 						}
 	
@@ -236,10 +243,14 @@ public class WaterGunGame{
 					} else {
 						if (g2.getGunPower() == 0) {
 							gun.printslow("UhOh " + p2.getName() + "'s gun has no water in it");
+							Thread.sleep(500);
+							gun.clearScreen();
 							break;
 						}
 						if (!g2.missedAttack()) {
 							gun.printslow(p2.getName() + "'s attack has been missed");
+							Thread.sleep(500);
+							gun.clearScreen();
 							break;
 						}
 	
@@ -254,6 +265,8 @@ public class WaterGunGame{
 
 					gun.clearScreen();
 					gun.printslow("Invalid option try again");
+					Thread.sleep(500);
+					gun.clearScreen();
 					continue;
 
 			}
