@@ -20,7 +20,7 @@ public class WordHunter {
 	public String getWord() {
 		wordLine = this.getRandomNumber(); 	
 		int i = 1;
-		wordLine = 10;
+		//wordLine = 10;
 		String line;
 		try {
 			BufferedReader getter = new BufferedReader(new FileReader ("words.txt"));
