@@ -20,6 +20,8 @@ public class Hangman {
 		return -1;
 	}
 
+//	public int get
+
 //	public String wordRecreation() /{
 
 
@@ -44,8 +46,10 @@ public class Hangman {
 				System.exit(1);
 		}
 
-		while (woman.lifes > 0 && woman.lifes < 5) {
-			System.out.println("Enter the word");
+		HangDiagram potrait = HangDiagram.FULL_LIFE;	
+
+		while (potrait != HangDiagram.DEAD) {
+			System.out.println(potrait.getDiagram());
 			for (int i = 0; i < length ; i++) {
 				if (bool[i]) {
 					System.out.print(toBeHeld[i] + " ");
@@ -57,7 +61,7 @@ public class Hangman {
 			//woman.lifeSaver.nextLine();
 			char input = woman.lifeSaver.next().charAt(0); 
 //			if (Arrays.asList(toBeHeld).contains(input)) {
-			if (Arrays.binarySearch(toBeHeld, input) > -1) {
+			if (woman.getIndex(toBeHeld, input) > -1) {
 				int index = woman.getIndex(toBeHeld, input);
 				if (!bool[index]) {
 					bool[index] = true;
@@ -69,7 +73,21 @@ public class Hangman {
 			}
 			System.out.println("Wrong guess You've lost 1 life");
 			--woman.lifes;	
+			switch (woman.lifes) {
+				case 3:
+					potrait = HangDiagram.THREE_LIFES;
+					break;
+				case 2:
+					potrait = HangDiagram.TWO_LIFES;
+					break;
+				case 1:
+					potrait = HangDiagram.ONE_LIFE;
+					break;
+				default:
+					potrait = HangDiagram.DEAD;
+			}
 		}
+		System.out.println(potrait.getDiagram());
 		System.out.println("The word is " + String.valueOf(toBeHeld));
 	}
 }
