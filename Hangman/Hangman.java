@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.Arrays;
+// import java.util.ArrayList;
 
 public class Hangman {
 	private int lifes = 4;
@@ -11,14 +12,29 @@ public class Hangman {
 		}
 	}
 
-	public int getIndex(char[] array, char target) {
-		for(int i = 0; i < array.length; i++) {
-			if (array[i] == (target)) {
-				return i;
+	public int getIndex(char[] array, boolean[] array2, char target) {
+		int f = -1;
+		for(int i = 0; i < array.length; ++i) {
+			if ((String.valueOf(array[i]).equals(String.valueOf(target))) && (array2[i] == false)) {
+				array2[i] = true;
+				f = 1;
 			}
 		}
-		return -1;
+		return f;
 	}
+
+	public boolean didHeWin(boolean[] bools) {
+		for (boolean bool : bools) {
+			if (!bool) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// public ArrayList<Integer> getIndex(char[] array, char target, )
+	
+	// public void 
 
 //	public int get
 
@@ -61,10 +77,16 @@ public class Hangman {
 			//woman.lifeSaver.nextLine();
 			char input = woman.lifeSaver.next().charAt(0); 
 //			if (Arrays.asList(toBeHeld).contains(input)) {
-			if (woman.getIndex(toBeHeld, input) > -1) {
-				int index = woman.getIndex(toBeHeld, input);
-				if (!bool[index]) {
-					bool[index] = true;
+	int index = woman.getIndex(toBeHeld, bool, input);
+			if (index > -1) {
+				
+				if (index == 1) {
+					// bool[index] = true;
+					if (woman.didHeWin(bool)) {
+						System.out.println("You've Won The Game");
+						System.out.println("The word is " + String.valueOf(toBeHeld));
+						System.exit(0);
+					}
 					System.out.println("Entered word is available");
 					continue;
 				}
